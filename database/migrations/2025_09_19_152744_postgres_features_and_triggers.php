@@ -48,6 +48,39 @@ return new class extends Migration
             ALTER TABLE time_slots
             ADD CONSTRAINT time_slots_dow_chk CHECK (day_of_week IN ('mon','tue','wed','thu','fri','sat','sun'));
 
+            -- Additional data integrity checks
+            ALTER TABLE reviews
+            ADD CONSTRAINT reviews_rating_chk CHECK (rating >= 1 AND rating <= 5);
+
+            ALTER TABLE booking_items
+            ADD CONSTRAINT booking_items_qty_chk CHECK (qty > 0),
+            ADD CONSTRAINT booking_items_unit_price_chk CHECK (unit_price_cents >= 0),
+            ADD CONSTRAINT booking_items_total_price_chk CHECK (total_price_cents >= 0),
+            ADD CONSTRAINT booking_items_duration_chk CHECK (duration_min >= 0);
+
+            ALTER TABLE invoice_items
+            ADD CONSTRAINT invoice_items_qty_chk CHECK (qty > 0),
+            ADD CONSTRAINT invoice_items_unit_price_chk CHECK (unit_price_cents >= 0),
+            ADD CONSTRAINT invoice_items_total_price_chk CHECK (total_price_cents >= 0);
+
+            ALTER TABLE payments
+            ADD CONSTRAINT payments_amount_chk CHECK (amount_cents > 0),
+            ADD CONSTRAINT payments_fee_chk CHECK (fee_cents >= 0);
+
+            ALTER TABLE services
+            ADD CONSTRAINT services_base_price_chk CHECK (base_price_cents >= 0),
+            ADD CONSTRAINT services_duration_chk CHECK (duration_minutes >= 0);
+
+            ALTER TABLE service_pricing
+            ADD CONSTRAINT service_pricing_price_chk CHECK (price_cents >= 0),
+            ADD CONSTRAINT service_pricing_discount_chk CHECK (discount_bp >= 0 AND discount_bp <= 10000);
+
+            ALTER TABLE staff
+            ADD CONSTRAINT staff_hourly_rate_chk CHECK (hourly_rate_cents >= 0);
+
+            ALTER TABLE promotion_usage
+            ADD CONSTRAINT promotion_usage_discount_chk CHECK (discount_cents >= 0);
+
             -- Anti-overlap bay scheduling: Exclusion constraint (aktif hanya saat status "aktif")
             -- Catatan: Partial exclusion constraint langsung via WHERE (PG >= 9.6)
             ALTER TABLE bookings ADD CONSTRAINT bookings_no_overlap_per_bay
@@ -239,6 +272,24 @@ return new class extends Migration
             ALTER TABLE IF EXISTS promotions DROP CONSTRAINT IF EXISTS promotions_type_chk;
             ALTER TABLE IF EXISTS promotions DROP CONSTRAINT IF EXISTS promotions_bp_chk;
             ALTER TABLE IF EXISTS time_slots DROP CONSTRAINT IF EXISTS time_slots_dow_chk;
+
+            -- Drop additional CHECKs
+            ALTER TABLE IF EXISTS reviews DROP CONSTRAINT IF EXISTS reviews_rating_chk;
+            ALTER TABLE IF EXISTS booking_items DROP CONSTRAINT IF EXISTS booking_items_qty_chk;
+            ALTER TABLE IF EXISTS booking_items DROP CONSTRAINT IF EXISTS booking_items_unit_price_chk;
+            ALTER TABLE IF EXISTS booking_items DROP CONSTRAINT IF EXISTS booking_items_total_price_chk;
+            ALTER TABLE IF EXISTS booking_items DROP CONSTRAINT IF EXISTS booking_items_duration_chk;
+            ALTER TABLE IF EXISTS invoice_items DROP CONSTRAINT IF EXISTS invoice_items_qty_chk;
+            ALTER TABLE IF EXISTS invoice_items DROP CONSTRAINT IF EXISTS invoice_items_unit_price_chk;
+            ALTER TABLE IF EXISTS invoice_items DROP CONSTRAINT IF EXISTS invoice_items_total_price_chk;
+            ALTER TABLE IF EXISTS payments DROP CONSTRAINT IF EXISTS payments_amount_chk;
+            ALTER TABLE IF EXISTS payments DROP CONSTRAINT IF EXISTS payments_fee_chk;
+            ALTER TABLE IF EXISTS services DROP CONSTRAINT IF EXISTS services_base_price_chk;
+            ALTER TABLE IF EXISTS services DROP CONSTRAINT IF EXISTS services_duration_chk;
+            ALTER TABLE IF EXISTS service_pricing DROP CONSTRAINT IF EXISTS service_pricing_price_chk;
+            ALTER TABLE IF EXISTS service_pricing DROP CONSTRAINT IF EXISTS service_pricing_discount_chk;
+            ALTER TABLE IF EXISTS staff DROP CONSTRAINT IF EXISTS staff_hourly_rate_chk;
+            ALTER TABLE IF EXISTS promotion_usage DROP CONSTRAINT IF EXISTS promotion_usage_discount_chk;
             SQL);
     }
 };

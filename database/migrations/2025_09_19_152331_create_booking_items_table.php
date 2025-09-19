@@ -20,6 +20,7 @@ return new class extends Migration
             $t->integer('duration_min')->default(0);
             $t->integer('total_price_cents');
             $t->timestampTz('created_at')->useCurrent();
+            $t->softDeletesTz();
             $t->index(['booking_id']);
             $t->index(['service_id']);
         });

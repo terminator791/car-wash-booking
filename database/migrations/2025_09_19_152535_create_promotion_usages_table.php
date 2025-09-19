@@ -19,6 +19,7 @@ return new class extends Migration
             $t->integer('discount_cents')->default(0);
             $t->timestampTz('used_at')->nullable();
             $t->timestampTz('created_at')->useCurrent();
+            $t->softDeletesTz();
             $t->unique(['promotion_id', 'booking_id']);
             $t->index(['promotion_id', 'user_id']);
         });

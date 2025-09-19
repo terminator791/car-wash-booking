@@ -18,7 +18,7 @@ return new class extends Migration
             $t->string('city')->nullable();
             $t->string('postal_code')->nullable();
             $t->date('birth_date')->nullable();
-            $t->string('gender', 16)->nullable(); // check constraint later
+            $t->enum('gender', ['male', 'female', 'other'])->nullable();
             $t->string('avatar_url')->nullable();
             $t->jsonb('preferences')->nullable();
             $t->timestampsTz();

@@ -21,6 +21,8 @@ return new class extends Migration
             $t->timestampTz('valid_until')->nullable();
             $t->timestampsTz();
             $t->index(['service_id', 'vehicle_type']);
+            $t->index(['valid_from']);
+            $t->index(['valid_until']);
         });
     }
 

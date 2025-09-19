@@ -74,6 +74,9 @@ return new class extends Migration
         Schema::table('notifications', function (Blueprint $t) {
             $t->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
+        Schema::table('sessions', function (Blueprint $t) {
+            $t->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+        });
     }
 
     /**
@@ -81,15 +84,71 @@ return new class extends Migration
      */
     public function down(): void
     {
-        foreach ([
-            'user_profiles', 'bays', 'vehicles', 'services', 'service_pricing', 'time_slots', 'slot_instances',
-            'bookings', 'booking_items', 'staff', 'booking_staff', 'payments', 'invoices', 'invoice_items',
-            'promotion_usage', 'reviews', 'notifications',
-        ] as $table) {
-            Schema::table($table, function (Blueprint $t) {
-                foreach ($t->getColumns() as $col) { /* noop: down is manual */
-                }
-            });
-        }
+        Schema::table('sessions', function (Blueprint $t) {
+            $t->dropForeign(['user_id']);
+        });
+        Schema::table('notifications', function (Blueprint $t) {
+            $t->dropForeign(['user_id']);
+        });
+        Schema::table('reviews', function (Blueprint $t) {
+            $t->dropForeign(['booking_id']);
+            $t->dropForeign(['user_id']);
+            $t->dropForeign(['location_id']);
+        });
+        Schema::table('promotion_usage', function (Blueprint $t) {
+            $t->dropForeign(['promotion_id']);
+            $t->dropForeign(['booking_id']);
+            $t->dropForeign(['user_id']);
+        });
+        Schema::table('invoice_items', function (Blueprint $t) {
+            $t->dropForeign(['invoice_id']);
+        });
+        Schema::table('invoices', function (Blueprint $t) {
+            $t->dropForeign(['booking_id']);
+            $t->dropForeign(['location_id']);
+        });
+        Schema::table('payments', function (Blueprint $t) {
+            $t->dropForeign(['booking_id']);
+        });
+        Schema::table('booking_staff', function (Blueprint $t) {
+            $t->dropForeign(['booking_id']);
+            $t->dropForeign(['staff_id']);
+        });
+        Schema::table('staff', function (Blueprint $t) {
+            $t->dropForeign(['user_id']);
+            $t->dropForeign(['location_id']);
+        });
+        Schema::table('booking_items', function (Blueprint $t) {
+            $t->dropForeign(['booking_id']);
+            $t->dropForeign(['service_id']);
+        });
+        Schema::table('bookings', function (Blueprint $t) {
+            $t->dropForeign(['user_id']);
+            $t->dropForeign(['vehicle_id']);
+            $t->dropForeign(['location_id']);
+            $t->dropForeign(['bay_id']);
+            $t->dropForeign(['slot_instance_id']);
+        });
+        Schema::table('slot_instances', function (Blueprint $t) {
+            $t->dropForeign(['time_slot_id']);
+        });
+        Schema::table('time_slots', function (Blueprint $t) {
+            $t->dropForeign(['location_id']);
+        });
+        Schema::table('service_pricing', function (Blueprint $t) {
+            $t->dropForeign(['service_id']);
+        });
+        Schema::table('services', function (Blueprint $t) {
+            $t->dropForeign(['category_id']);
+        });
+        Schema::table('vehicles', function (Blueprint $t) {
+            $t->dropForeign(['user_id']);
+        });
+        Schema::table('bays', function (Blueprint $t) {
+            $t->dropForeign(['location_id']);
+        });
+        Schema::table('user_profiles', function (Blueprint $t) {
+            $t->dropForeign(['user_id']);
+        });
     }
 };

@@ -18,6 +18,7 @@ return new class extends Migration
             $t->integer('qty')->default(1);
             $t->integer('unit_price_cents');
             $t->integer('total_price_cents');
+            $t->softDeletesTz();
         });
     }
 
