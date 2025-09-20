@@ -1,6 +1,6 @@
 # Car Wash Booking System
 
-A Laravel-based web application for managing car wash bookings, services, and customer interactions.
+A Laravel-based web application for working on a challenge.
 
 ### Entity-Relationship Diagram (i use Postgresql for this schema)
 
@@ -38,13 +38,7 @@ A Laravel-based web application for managing car wash bookings, services, and cu
     php artisan migrate:fresh --seed
     ```
 
-6. Build assets:
-
-    ```
-
-    ```
-
-7. Start the development server:
+6. Start the development server:
     ```
     php artisan serve
     ```
@@ -52,8 +46,6 @@ A Laravel-based web application for managing car wash bookings, services, and cu
 ## Usage
 
 -   Access the application at `http://localhost:8000`
--   Register as a user or log in as an admin
--   Browse services, make bookings, and manage your profile
 
 ## Database Schema
 
