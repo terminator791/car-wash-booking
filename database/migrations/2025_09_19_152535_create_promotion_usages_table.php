@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -23,6 +24,9 @@ return new class extends Migration
             $t->unique(['promotion_id', 'booking_id']);
             $t->index(['promotion_id', 'user_id']);
         });
+
+        // Add check constraint
+        DB::statement("ALTER TABLE promotion_usage ADD CONSTRAINT promotion_usage_discount_chk CHECK (discount_cents >= 0)");
     }
 
     /**
@@ -30,6 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('promotion_usages');
+        DB::statement('ALTER TABLE promotion_usage DROP CONSTRAINT IF EXISTS promotion_usage_discount_chk');
+        Schema::dropIfExists('promotion_usage');
     }
 };

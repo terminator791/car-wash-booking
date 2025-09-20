@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -23,6 +24,9 @@ return new class extends Migration
             $t->timestampsTz();
             $t->unique(['booking_id', 'staff_id', 'role']);
         });
+
+        // Add check constraint
+        DB::statement("ALTER TABLE booking_staff ADD CONSTRAINT booking_staff_role_chk CHECK (role IN ('primary','assistant'))");
     }
 
     /**
@@ -30,6 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE booking_staff DROP CONSTRAINT IF EXISTS booking_staff_role_chk');
         Schema::dropIfExists('booking_staff');
     }
 };

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -16,12 +17,15 @@ return new class extends Migration
             $t->uuid('location_id');
             $t->time('start_time');
             $t->time('end_time');
-            $t->string('day_of_week', 3); // mon..sun
+            $t->enum('day_of_week', ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']);
             $t->integer('max_bookings')->default(1);
             $t->boolean('is_active')->default(true);
             $t->timestampsTz();
             $t->unique(['location_id', 'day_of_week', 'start_time', 'end_time']);
         });
+
+        // Add check constraint
+        DB::statement("ALTER TABLE time_slots ADD CONSTRAINT time_slots_dow_chk CHECK (day_of_week IN ('mon','tue','wed','thu','fri','sat','sun'))");
     }
 
     /**
@@ -29,6 +33,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE time_slots DROP CONSTRAINT IF EXISTS time_slots_dow_chk');
         Schema::dropIfExists('time_slots');
     }
 };

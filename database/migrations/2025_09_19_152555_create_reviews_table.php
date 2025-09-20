@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -23,6 +24,9 @@ return new class extends Migration
             $t->timestampsTz();
             $t->index(['location_id', 'rating']);
         });
+
+        // Add check constraint
+        DB::statement("ALTER TABLE reviews ADD CONSTRAINT reviews_rating_chk CHECK (rating >= 1 AND rating <= 5)");
     }
 
     /**
@@ -30,6 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE reviews DROP CONSTRAINT IF EXISTS reviews_rating_chk');
         Schema::dropIfExists('reviews');
     }
 };

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -27,6 +28,10 @@ return new class extends Migration
             $t->jsonb('conditions')->nullable();
             $t->timestampsTz();
         });
+
+        // Add check constraints
+        DB::statement("ALTER TABLE promotions ADD CONSTRAINT promotions_type_chk CHECK (type IN ('PERCENT','FIXED','FREE_SERVICE'))");
+        DB::statement("ALTER TABLE promotions ADD CONSTRAINT promotions_bp_chk CHECK (value_cents_or_bp >= 0 AND value_cents_or_bp <= 10000)");
     }
 
     /**
@@ -34,6 +39,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE promotions DROP CONSTRAINT IF EXISTS promotions_type_chk');
+        DB::statement('ALTER TABLE promotions DROP CONSTRAINT IF EXISTS promotions_bp_chk');
         Schema::dropIfExists('promotions');
     }
 };

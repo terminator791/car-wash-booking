@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -26,6 +27,12 @@ return new class extends Migration
             $t->timestampsTz();
             $t->index(['booking_id', 'status']);
         });
+
+        // Add check constraints
+        DB::statement("ALTER TABLE payments ADD CONSTRAINT payments_method_chk CHECK (payment_method IN ('cash','credit_card','debit_card','e_wallet','bank_transfer'))");
+        DB::statement("ALTER TABLE payments ADD CONSTRAINT payments_status_chk CHECK (status IN ('pending','processing','completed','failed','refunded'))");
+        DB::statement("ALTER TABLE payments ADD CONSTRAINT payments_amount_chk CHECK (amount_cents > 0)");
+        DB::statement("ALTER TABLE payments ADD CONSTRAINT payments_fee_chk CHECK (fee_cents >= 0)");
     }
 
     /**
@@ -33,6 +40,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_method_chk');
+        DB::statement('ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_status_chk');
+        DB::statement('ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_amount_chk');
+        DB::statement('ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_fee_chk');
         Schema::dropIfExists('payments');
     }
 };

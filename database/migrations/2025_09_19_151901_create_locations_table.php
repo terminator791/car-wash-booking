@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('locations', function (Blueprint $t) {
             $t->uuid('id')->primary();
             $t->string('name');
-            $t->text('address')->nullable();
-            $t->string('city')->nullable();
+            $t->text('address');
+            $t->string('city');
             $t->string('postal_code')->nullable();
             $t->string('timezone')->nullable();
             $t->decimal('latitude', 10, 7)->nullable();

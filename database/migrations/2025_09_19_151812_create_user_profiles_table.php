@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -23,6 +24,9 @@ return new class extends Migration
             $t->jsonb('preferences')->nullable();
             $t->timestampsTz();
         });
+
+        // Add check constraint for gender
+        DB::statement("ALTER TABLE user_profiles ADD CONSTRAINT user_profiles_gender_chk CHECK (gender IS NULL OR gender IN ('male','female','other'))");
     }
 
     /**
@@ -30,6 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE user_profiles DROP CONSTRAINT IF EXISTS user_profiles_gender_chk');
         Schema::dropIfExists('user_profiles');
     }
 };

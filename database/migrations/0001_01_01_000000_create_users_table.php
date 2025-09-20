@@ -13,17 +13,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $t) {
-            $t->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
+            $t->uuid('id')->primary();
             $t->string('email')->unique();
             $t->string('phone')->nullable()->unique();
             $t->string('password');
             $t->string('full_name')->nullable();
-            $t->string('role', 16); // check constraint in PG migration
+            $t->string('role', 16); // (i prefer spatie/laravel-permission but for simplicity, just a string here)
             $t->boolean('is_verified')->default(false);
             $t->timestampTz('email_verified_at')->nullable();
             $t->timestampsTz();
             $t->softDeletesTz();
         });
+
+        // Add check constraint for role
+        DB::statement("ALTER TABLE users ADD CONSTRAINT users_role_chk CHECK (role IN ('customer','staff','admin'))");
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
@@ -46,6 +49,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_chk');
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -24,6 +25,10 @@ return new class extends Migration
             $t->timestampsTz();
             $t->index(['location_id', 'is_active']);
         });
+
+        // Add check constraints
+        DB::statement("ALTER TABLE staff ADD CONSTRAINT staff_position_chk CHECK (position IN ('washer','supervisor','manager'))");
+        DB::statement("ALTER TABLE staff ADD CONSTRAINT staff_hourly_rate_chk CHECK (hourly_rate_cents >= 0)");
     }
 
     /**
@@ -31,6 +36,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement('ALTER TABLE staff DROP CONSTRAINT IF EXISTS staff_position_chk');
+        DB::statement('ALTER TABLE staff DROP CONSTRAINT IF EXISTS staff_hourly_rate_chk');
         Schema::dropIfExists('staff');
     }
 };
